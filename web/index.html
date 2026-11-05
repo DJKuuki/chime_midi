@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+/* the same base reset the guide had when it was published as an artifact */
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; } img { max-width: 100%; } [hidden] { display: none !important; }
+</style>
+<title>发车铃创作指南</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: a train line. The route map on the left is the table of contents; every section is a station with its own name board. */
+:root {
+  --bg: #f2f4f5;          /* platform concrete, cool grey */
+  --surface: #ffffff;     /* name boards, tables, cards */
+  --ink: #15191d;
+  --muted: #59646d;
+  --rule: #d7dde1;
+  --line: #1c4f8c;        /* line colour: route map, links, melody notes */
+  --signal: #eeb000;      /* platform safety yellow: current station, sounding notes */
+  --signal-soft: #fff4cc;
+  --c-orig: #2a78d6; --c-arr: #eb6834; --c-car: #1baf7a;
+  --board: #0c0e10; --board-amber: #ffb547; --board-dim: #8a6a35; --board-rule: #2a2418;
+  --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-led: "DotGothic16", "Noto Sans SC", ui-monospace, monospace;
+  --step--1: 0.8125rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.6rem; --step-3: 2.4rem; --step-4: clamp(2.4rem, 7vw, 4.2rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1215; --surface: #171b1f; --ink: #e7ebee; --muted: #9aa5ae; --rule: #2a3137;
+    --line: #8cb7ef; --signal: #f2c230; --signal-soft: #3a3214;
+    --c-orig: #3987e5; --c-arr: #d95926; --c-car: #199e70;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1215; --surface: #171b1f; --ink: #e7ebee; --muted: #9aa5ae; --rule: #2a3137;
+  --line: #8cb7ef; --signal: #f2c230; --signal-soft: #3a3214;
+  --c-orig: #3987e5; --c-arr: #d95926; --c-car: #199e70;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: var(--step-0); line-height: 1.75; }
+a { color: var(--line); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* ---------- hero ---------- */
+.hero { padding-block: clamp(2rem, 6vw, 4rem) 2.5rem; border-bottom: 6px solid var(--line); background: var(--surface); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: end; }
+.eyebrow { font-size: var(--step--1); letter-spacing: 0.12em; color: var(--muted); font-weight: 500; margin: 0 0 0.6rem; }
+.hero h1 { font-size: var(--step-4); font-weight: 900; margin: 0 0 1rem; letter-spacing: 0.02em; }
+.lede { margin: 0; max-width: 34em; color: var(--ink); }
+.lede + .lede { margin-top: 0.6rem; color: var(--muted); font-size: var(--step--1); }
+.board { background: var(--board); color: var(--board-amber); border-radius: 10px; padding: 1rem 1.1rem 1.1rem; box-shadow: inset 0 0 0 2px #000, 0 10px 30px rgba(0,0,0,.18); overflow-x: auto; }
+.board-title { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--font-led); font-size: var(--step--1); color: var(--board-dim); letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+.board table { width: 100%; border-collapse: collapse; font-family: var(--font-led); min-width: 520px; }
+.board th { font-weight: 400; text-align: left; color: var(--board-dim); font-size: var(--step--1); padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--board-rule); }
+.board td { padding: 0.45rem 0.5rem; font-size: 1.15rem; border-bottom: 1px dashed var(--board-rule); text-shadow: 0 0 6px rgba(255,181,71,.45); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.board tr:last-child td { border-bottom: 0; }
+.board td:first-child { color: #ffe3b0; }
+.board .blink { animation: blink 1.6s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .board .blink { animation: none; } }
+
+/* ---------- main grid with route map ---------- */
+.layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); padding-block: 2.5rem 4rem; }
+.route { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.25rem); align-self: start; }
+.route-label { font-size: var(--step--1); color: var(--muted); letter-spacing: 0.1em; margin: 0 0 0.75rem; }
+.route ol { list-style: none; margin: 0; padding: 0; position: relative; }
+.route ol::before { content: ""; position: absolute; left: 9px; top: 10px; bottom: 10px; width: 6px; border-radius: 3px; background: var(--line); }
+.route li a { position: relative; display: grid; grid-template-columns: 24px 1fr; gap: 0.6rem; align-items: center; padding: 0.3rem 0; color: var(--ink); text-decoration: none; font-size: 0.95rem; }
+.route li a::before { content: ""; width: 14px; height: 14px; margin-left: 5px; border-radius: 50%; background: var(--surface); border: 3px solid var(--line); z-index: 1; }
+.route li a .code { font-family: var(--font-led); font-size: 0.72rem; color: var(--muted); display: block; line-height: 1.1; }
+.route li a[aria-current="true"] { font-weight: 700; }
+.route li a[aria-current="true"]::before { background: var(--signal); border-color: var(--ink); }
+.content { min-width: 0; display: grid; gap: 3.5rem; }
+section { scroll-margin-top: 1rem; min-width: 0; }
+
+/* station name board */
+.sign { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+.sign-main { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; padding: 1rem 1.2rem 0.7rem; }
+.sign-no { font-family: var(--font-led); font-size: 0.85rem; border: 2px solid var(--line); color: var(--line); border-radius: 6px; padding: 0.05rem 0.4rem; letter-spacing: 0.06em; }
+.sign h2 { margin: 0; font-size: var(--step-3); font-weight: 900; letter-spacing: 0.04em; }
+.sign-sub { color: var(--muted); font-size: var(--step--1); letter-spacing: 0.08em; }
+.sign-bar { display: flex; justify-content: space-between; gap: 1rem; background: var(--line); color: var(--surface); font-size: var(--step--1); padding: 0.3rem 1.2rem; }
+.sign-bar a { color: inherit; text-decoration: none; }
+.sign-bar a:hover { text-decoration: underline; }
+
+.prose { max-width: 46rem; }
+.prose p { margin: 0 0 1rem; }
+.prose ul, .prose ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+.prose li { margin-bottom: 0.35rem; }
+.prose li > ul { margin: 0.35rem 0 0; }
+h3 { font-size: var(--step-1); margin: 2rem 0 0.75rem; font-weight: 700; }
+.take { border-left: 6px solid var(--signal); background: var(--signal-soft); padding: 0.9rem 1.1rem; border-radius: 0 8px 8px 0; margin: 1.25rem 0; max-width: 46rem; }
+.take p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+code, .jp { font-family: var(--font-sans); }
+.score { font-family: var(--font-led); letter-spacing: 0.06em; font-size: 1rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 0.15rem 0.5rem; white-space: nowrap; }
+.score-line { display: block; overflow-x: auto; white-space: nowrap; }
+.oh, .ol { position: relative; display: inline-block; }
+.oh::after, .ol::after { content: ""; position: absolute; left: 50%; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: currentColor; }
+.oh::after { top: 0; } .ol::after { bottom: 1px; }
+.score { line-height: 1.9; }
+
+/* tables */
+.table-wrap { overflow-x: auto; margin: 0 0 1.25rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table.data { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+table.data th, table.data td { padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+table.data thead th { font-weight: 700; background: var(--bg); white-space: nowrap; }
+table.data tbody tr:last-child td { border-bottom: 0; }
+table.data td:first-child { white-space: nowrap; }
+table.data td.n, table.data th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* charts */
+.chart { position: relative; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1rem 0.5rem; margin: 0 0 1rem; }
+.chart h3 { margin: 0 0 0.25rem; font-size: 1.05rem; }
+.chart .cap { margin: 0 0 0.5rem; color: var(--muted); font-size: var(--step--1); }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { fill: var(--muted); font-family: var(--font-sans); font-size: 12px; }
+.chart .grid line { stroke: var(--rule); stroke-width: 1; }
+.chart .axis-label { fill: var(--muted); }
+.chart .median { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+.chart .median-label { fill: var(--ink); font-weight: 700; }
+.dot { stroke: var(--surface); stroke-width: 1.5; cursor: default; }
+.dot.jrsh { stroke: var(--signal); stroke-width: 2.5; }
+.f-orig { fill: var(--c-orig); } .f-arr { fill: var(--c-arr); } .f-car { fill: var(--c-car); }
+.bar { stroke: var(--surface); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: var(--step--1); color: var(--muted); margin: 0.25rem 0 0.25rem; }
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend i.ring { border-radius: 50%; border: 2.5px solid var(--signal); background: var(--c-orig); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.4; padding: 0.35rem 0.55rem; border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 5; }
+details.data-view { margin: 0.25rem 0 0.75rem; font-size: var(--step--1); }
+details.data-view summary { cursor: pointer; color: var(--line); }
+details.data-view .table-wrap { margin-top: 0.5rem; max-height: 320px; overflow: auto; }
+
+/* case cards */
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 1rem; }
+.case { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.1rem; min-width: 0; }
+.case h3 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+.case .meta { color: var(--muted); font-size: var(--step--1); margin: 0 0 0.6rem; }
+.case ul { margin: 0.5rem 0 0; padding-left: 1.15rem; font-size: 0.93rem; }
+.case li { margin-bottom: 0.3rem; }
+.tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.05rem 0.45rem; border-radius: 999px; border: 1.5px solid currentColor; margin-right: 0.35rem; vertical-align: 2px; }
+.tag.orig { color: var(--c-orig); } .tag.arr { color: var(--c-arr); } .tag.car { color: var(--c-car); } .tag.unk { color: var(--muted); }
+
+/* template */
+.template { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; margin: 0 0 1.25rem; }
+.bar-cell { background: var(--surface); border: 1px solid var(--rule); border-top: 6px solid var(--line); border-radius: 8px; padding: 0.75rem 0.85rem; min-width: 0; }
+.bar-cell .bn { font-family: var(--font-led); color: var(--line); font-size: 0.8rem; }
+.bar-cell b { display: block; font-size: 1.05rem; margin: 0.15rem 0 0.35rem; }
+.bar-cell p { margin: 0 0 0.35rem; font-size: 0.88rem; }
+.bar-cell .chord { font-family: var(--font-led); font-size: 0.85rem; color: var(--muted); }
+.checklist { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: 0.35rem; max-width: 46rem; }
+.checklist label { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.5rem; align-items: start; cursor: pointer; padding: 0.45rem 0.6rem; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule); }
+.checklist input { width: 1.05rem; height: 1.05rem; margin-top: 0.3rem; accent-color: var(--line); }
+.checklist input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--signal); text-decoration-thickness: 2px; }
+
+/* practice pieces */
+.pieces { display: grid; gap: 1rem; }
+.piece { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.1rem 1.1rem; min-width: 0; }
+.piece-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.9rem; margin-bottom: 0.6rem; }
+.piece-head h3 { margin: 0; font-size: 1.25rem; }
+.piece-head .meta { color: var(--muted); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.player { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.9rem; align-items: center; }
+.play { width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--line); color: var(--surface); cursor: pointer; display: grid; place-items: center; }
+.play:hover { filter: brightness(1.1); }
+.play svg { width: 20px; height: 20px; fill: currentColor; }
+.roll { width: 100%; height: 96px; display: block; background: var(--bg); border-radius: 6px; }
+.roll .n-m { fill: var(--line); } .roll .n-b { fill: var(--muted); opacity: .75; } .roll .n-a { fill: var(--muted); opacity: .28; }
+.roll .on { fill: var(--signal) !important; opacity: 1 !important; }
+.roll .head { stroke: var(--ink); stroke-width: 1.5; }
+.time { font-family: var(--font-led); font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; font-variant-numeric: tabular-nums; }
+.piece .score-line { margin-top: 0.7rem; }
+.piece .why { margin: 0.6rem 0 0; font-size: 0.93rem; }
+
+.sources li { margin-bottom: 0.4rem; }
+footer { border-top: 1px solid var(--rule); padding-block: 1.5rem 2.5rem; color: var(--muted); font-size: var(--step--1); }
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .route { position: static; }
+  .route ol { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+  .route ol::before { display: none; }
+  .route li a { grid-template-columns: auto 1fr; padding: 0.1rem 0; }
+  .route li a::before { width: 10px; height: 10px; margin-left: 0; border-width: 2px; }
+  .route li a .code { display: none; }
+  .template { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .template { grid-template-columns: minmax(0, 1fr); }
+  .sign h2 { font-size: var(--step-2); }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">日本车站发车铃 · 分析与写法</p>
+      <h1>发车铃创作指南</h1>
+      <p class="lede">把 181 首日本车站发车铃和 11 首手工扒谱的铃声拆开来看：多长、什么调、用哪些音、怎么收尾。最后按这些规律写了 5 首，可以直接在页面上听。</p>
+      <p class="lede">数字是中位数或比例。同一旋律的多个版本只算一次。</p>
+    </div>
+    <div class="board" role="group" aria-label="三类铃声的典型样子">
+      <div class="board-title"><span>典型样子</span><span class="blink">● 中位数</span></div>
+      <table>
+        <thead><tr><th>类型</th><th>一遍</th><th>速度</th><th>大调</th><th>旋律中心</th><th>收在 I</th></tr></thead>
+        <tbody>
+          <tr><td>原创发车铃</td><td>8.1 s</td><td>120</td><td>87%</td><td>A5</td><td>63%</td></tr>
+          <tr><td>改编发车铃</td><td>13.5 s</td><td>121</td><td>85%</td><td>D5</td><td>70%</td></tr>
+          <tr><td>车内铃</td><td>7.1 s</td><td>—</td><td>100%</td><td>A♯5</td><td>100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="route" aria-label="目录">
+    <p class="route-label">路线图</p>
+    <ol id="route"></ol>
+  </nav>
+
+  <main class="content">
+
+    <section id="classify" data-name="分类" data-code="CH01">
+      <div class="prose">
+        <p><strong>要分类，而且要分两层。</strong>另外，同一首旋律的多个版本要先合并再统计。</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>分类</th><th>为什么要分</th><th>数据上的差别</th></tr></thead>
+          <tbody>
+            <tr><td><strong>用途</strong><br>发车铃 / 车内铃</td><td>发车铃在站台反复播放，可能循环，也可能被按钮随时切断。车内铃在列车广播前响一次。前者要能循环、能被打断，后者要一次说完、明确收尾。</td><td>7 首手工车内铃全部收在主音和主和弦。原创发车铃只有 41% 的旋律落在主音，JR-SH 系列只有 22%。</td></tr>
+            <tr><td><strong>来源</strong><br>原创 / 改编</td><td>原创要决定写什么。改编要决定截哪一段、怎么塞进十几秒、怎么换成铃声的音色；旋律和和声是原曲给定的。</td><td>改编的中位长度 13.5 秒，原创 8.1 秒。改编旋律中心在 D5，原创在 A5。改编用七和弦更多。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p>181 个文件里只有 113 个不同的旋律。其余 68 个是同一旋律的移调、变速、截段版本，光 Water Crown 就有 10 个。统计时每个旋律只算一次，变体本身单独当成一种技法来看。</p>
+      </div>
+      <h3>分出来的结果</h3>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>类别</th><th class="n">旋律</th><th class="n">文件</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>原创 · JR-SH 系列</td><td class="n">9</td><td class="n">26</td><td>JR 东日本较早期的发车铃系列，有 -1、-2、高音、低音等版本</td></tr>
+            <tr><td>原创 · SF 系列</td><td class="n">13</td><td class="n">14</td><td>JR 东日本的编号曲，如 SF-1「遊園地のある駅」（大崎）、SF-3「教会の見える駅」（秋叶原）</td></tr>
+            <tr><td>原创 · 西班牙语标题系列</td><td class="n">4</td><td class="n">24</td><td>東洋メディアリンクス 制作的 Water Crown、Cielo Estrellado、Gota del Vient、Verde Rayo，版本最多</td></tr>
+            <tr><td>原创 · 英文标题系列</td><td class="n">16</td><td class="n">18</td><td>airy、cappuccino、mellow time、sunny islands 等，出处未确认</td></tr>
+            <tr><td>原创 · 日文标题曲库</td><td class="n">33</td><td class="n">45</td><td>海岸通り、九月の風、高原等，多有 V1、V2 两版，出处未确认</td></tr>
+            <tr><td>改编</td><td class="n">27</td><td class="n">40</td><td>昭和歌谣 8、古典器乐 4、市歌 3、迪士尼 2、广告歌 2、流行歌 2、体育应援 2、唱歌和童谣 2、民谣 1、外国流行歌 1</td></tr>
+            <tr><td>不确定</td><td class="n">11</td><td class="n">14</td><td>如 HANDS、Keep On Rising、Vamos Ardija，不参与原创和改编的对比</td></tr>
+            <tr><td>车内铃（手工扒谱）</td><td class="n">7</td><td class="n">7</td><td>189系、373系、キハ85、こだま、のぞみ（原创）；鉄道唱歌、ハイケンスのセレナーデ（改编）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="overview" data-name="总体画像" data-code="CH02">
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>指标</th><th class="n">原创发车铃</th><th class="n">改编发车铃</th><th class="n">车内铃</th></tr></thead>
+          <tbody>
+            <tr><td>旋律数</td><td class="n">75</td><td class="n">27</td><td class="n">7</td></tr>
+            <tr><td>一遍的长度</td><td class="n"><strong>8.1 秒</strong></td><td class="n"><strong>13.5 秒</strong></td><td class="n">7.1 秒</td></tr>
+            <tr><td>10 秒以内</td><td class="n">85%</td><td class="n">19%</td><td class="n">—</td></tr>
+            <tr><td>速度（BPM，约）</td><td class="n">120</td><td class="n">121</td><td class="n">—</td></tr>
+            <tr><td>旋律每秒音数</td><td class="n">3.3</td><td class="n">3.3</td><td class="n">2.3</td></tr>
+            <tr><td>大调</td><td class="n"><strong>87%</strong></td><td class="n">85%</td><td class="n">100%</td></tr>
+            <tr><td>主音 1 级占全部音符时值</td><td class="n">33%</td><td class="n">31%</td><td class="n">41%</td></tr>
+            <tr><td>五声音级 1 2 3 5 6 占比</td><td class="n">82%</td><td class="n">84%</td><td class="n">92%</td></tr>
+            <tr><td>4、7 级占比</td><td class="n">13%</td><td class="n">13%</td><td class="n">8%</td></tr>
+            <tr><td>旋律中心</td><td class="n"><strong>A5</strong>（约 880 Hz）</td><td class="n">D5</td><td class="n">A♯5</td></tr>
+            <tr><td>旋律中心在 C5 以上</td><td class="n">91%</td><td class="n">78%</td><td class="n">—</td></tr>
+            <tr><td>低于 C3 的音</td><td class="n">几乎没有</td><td class="n">几乎没有</td><td class="n">没有</td></tr>
+            <tr><td>平均同时发声数</td><td class="n">2.8</td><td class="n">2.7</td><td class="n">2.2</td></tr>
+            <tr><td>最后的和弦是 I</td><td class="n">63%</td><td class="n">70%</td><td class="n">100%</td></tr>
+            <tr><td>旋律最后一音是主音</td><td class="n">41%</td><td class="n">52%</td><td class="n">100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="chart" id="chart-length" style="margin-inline:0">
+        <h3>一遍有多长</h3>
+        <p class="cap">每个点是一首旋律，竖线是中位数。悬停可看曲名。</p>
+        <div class="legend"><span><i class="f-orig" style="background:var(--c-orig)"></i>原创发车铃</span><span><i style="background:var(--c-arr)"></i>改编发车铃</span><span><i style="background:var(--c-car)"></i>车内铃</span><span><i class="ring"></i>JR-SH 系列</span></div>
+        <svg id="svg-length" viewBox="0 0 720 270" height="270" role="img" aria-label="三类铃声一遍长度的分布：原创中位 8.1 秒，改编 13.5 秒，车内铃 7.1 秒"></svg>
+        <div class="tip" hidden></div>
+        <details class="data-view"><summary>查看数据</summary><div class="table-wrap"><table class="data" id="table-length"><thead><tr><th>旋律</th><th>类型</th><th class="n">秒</th></tr></thead><tbody></tbody></table></div></details>
+      </figure>
+
+      <figure class="chart" id="chart-degree" style="margin-inline:0">
+        <h3>大调铃声用哪些音级</h3>
+        <p class="cap">相对主音，按音符时值加权。悬停可看数值。</p>
+        <div class="legend" id="legend-degree"></div>
+        <svg id="svg-degree" viewBox="0 0 720 300" height="300" role="img" aria-label="三类大调铃声的音级分布：主音约占三分之一，其次是 5 级和 3 级，降号音级几乎不用"></svg>
+        <div class="tip" hidden></div>
+        <details class="data-view"><summary>查看数据</summary><div class="table-wrap"><table class="data" id="table-degree"><thead><tr><th>音级</th><th class="n">原创</th><th class="n">改编</th><th class="n">车内铃</th></tr></thead><tbody></tbody></table></div></details>
+      </figure>
+
+      <div class="take"><p>原创发车铃是一段约 8 秒、约 120 BPM 的大调小曲。旋律在 C5–E6 的明亮音区，围着主和弦的 1、3、5 转，五声音级为主。和声简单，常带 sus4、add9 的钟声色彩。几乎不用重低音。</p></div>
+    </section>
+
+    <section id="style" data-name="风格与系列" data-code="CH03">
+      <div class="prose"><p>同样是原创，不同系列各有一套口音。</p></div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>系列</th><th>长度</th><th>调式</th><th>织体</th><th>结尾</th><th>听感</th></tr></thead>
+          <tbody>
+            <tr><td>JR-SH</td><td><strong>7.3 秒，非常统一</strong>，一半在 7.1–7.5 秒</td><td>大调 6/9，小调 3/9，调外音最多（15%）</td><td>和弦式起音占 89%，一下一下敲和弦</td><td>只有 2/9 落在 I，像为循环设计</td><td>早期合成器钟声，色彩偏浓</td></tr>
+            <tr><td>SF</td><td>8.1 秒</td><td>大调 12/13</td><td>旋律加分解和弦</td><td><strong>85% 落在 I</strong></td><td>明快规整，I–IV–V 清楚</td></tr>
+            <tr><td>西班牙语标题</td><td>11.4 秒，最长</td><td>4 首里 3 首偏小调或调式色彩，♭3、♭6、♭7 用得多</td><td>线条式，和弦式起音只占 30%，琶音流动</td><td>多停在 ♭VII、♭VI</td><td>有流动感，最常被移调、变速做成多版本</td></tr>
+            <tr><td>英文标题</td><td>8.1 秒</td><td><strong>全部大调</strong></td><td>最稀疏，旋律每秒 2.7 个音</td><td>81% 落在 I</td><td>轻柔，留白多</td></tr>
+            <tr><td>日文标题曲库</td><td>8.4 秒</td><td>大调 91%</td><td>中等</td><td>61% 落在 I</td><td>风景画式的标题，常有 V1、V2 两版</td></tr>
+            <tr><td>改编</td><td>13.5 秒</td><td>大调 85%</td><td>和弦式起音约 70%</td><td>70% 落在 I</td><td>保留原曲辨识度，音区更低</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="scales" data-name="音阶与和声" data-code="CH04">
+      <div class="prose">
+        <h3 style="margin-top:0">音阶：主音中心，五声骨架</h3>
+        <ul>
+          <li><strong>大调占绝对多数</strong>：原创 87%，改编 85%。原创里的 10 首小调，JR-SH 占 3 首，西班牙语标题系列占 3 首（Water Crown、Gota del Vient、Verde Rayo）。</li>
+          <li><strong>主音压倒性</strong>：1 级一个音就占全部音符时值的三分之一，1、3、5 合计约三分之二。铃声的本质就是反复敲响主和弦。</li>
+          <li><strong>五声音级是骨架</strong>：1 2 3 5 6 占 82%，车内铃 92%。4、7 级只占约 13%，多半是经过音、导音，或出现在 V7、IV 和弦里。</li>
+          <li><strong>严格五声</strong>（4、7 级合计不到 5%）的原创有 9 首，如 JR-SH4、SF10-60「チャイム」、mellow time、高原のつぶやき；改编有 3 首：汽車、アマリリス、オー・シャンゼリゼ。</li>
+          <li><strong>半音只用来点睛</strong>：调外音的中位数是 0。手工扒谱里的例子都是邻音，如 のぞみ 的 <span class="score">E–E♭–E</span>，farewell 的 <span class="score">A–A♭–D</span>，189系 第二次出现动机时把 F 改成 F♯。</li>
+        </ul>
+        <h3>和声：短、稳、带一点色彩</h3>
+        <ul>
+          <li><strong>I 占主导</strong>：约 45% 的拍子停在主和弦上，其次是 V、IV、vi、ii。</li>
+          <li><strong>每 2–3 拍换一次和弦</strong>，也就是每半小节到一小节。</li>
+          <li><strong>色彩和弦</strong>：约五分之一的拍子是 sus4 或 add9，开放、不急着解决的钟声感。七和弦在原创里很少（中位数 0），改编里多一些。</li>
+          <li><strong>流行歌的长套路一次都没出现</strong>：王道进行（IV–V–iii–vi）和 I–V–vi–IV 在 102 首里都是 0。4 小节放不下这种长循环。</li>
+          <li><strong>五分之一到三分之一的作品有一处意外</strong>：副属和弦（如 II7、III7），或借用和弦（如 ♭VII、♭VI、iv）。</li>
+          <li><strong>结尾</strong>：原创 63%、改编 70% 落在 I，最常见的是 V→I，其次是 sus4→I、ii7→I。JR-SH 和西班牙语标题系列多停在别的和弦上，便于循环。</li>
+        </ul>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>好用的短进行</th><th>出处</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><span class="score">IV – iii – ii – I</span></td><td>farewell</td><td>每小节一个和弦，低音 F–E–D–C 级进下行</td></tr>
+            <tr><td><span class="score">I V | IV V | I V | vi V | I</span></td><td>春</td><td>两小节问，两小节答</td></tr>
+            <tr><td><span class="score">ii – I … ii7 – V7 – I</span></td><td>SF22-29</td><td>6.5 秒里完成一次完整终止</td></tr>
+            <tr><td><span class="score">I – IV – V – I</span></td><td>のぞみ</td><td>同一动机依次落在三个和弦上</td></tr>
+            <tr><td><span class="score">III7 – vi – II7 – V7 – I</span></td><td>キハ85</td><td>一串副属和弦，沿五度圈落回主音</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="melody" data-name="旋律、织体、节奏" data-code="CH05">
+      <div class="prose">
+        <h3 style="margin-top:0">旋律：高音区，动机重复，级进收尾</h3>
+        <ul>
+          <li><strong>音区</strong>：原创旋律中心在 A5（约 880 Hz），91% 在 C5 以上。低于 C3 的音几乎没有：车站喇叭放不出重低音，低频还会让声音发糊。</li>
+          <li><strong>音域</strong>：约一个八度加一个三度（中位数 14 个半音）。</li>
+          <li><strong>音程</strong>（只用 7 个手工扒谱的旋律声部统计）：级进占 26–73%，三度占 8–59%，四度以上的跳进占 3–33%。跳进多半是主和弦分解。</li>
+          <li><strong>动机与重复</strong>：几乎每首都把半小节到一小节的动机重复两三次，或者每次挪一级再重复。SF22-29 的邻音动机 <span class="score"><span class='oh'>1</span> 7 <span class='oh'>1</span></span> 出现两次；farewell 每小节下移一级；のぞみ 的「邻音 + 上行琶音」先后落在 I、IV、V 上。</li>
+          <li><strong>高点</strong>：原创的最高音中位位置约在全曲 37% 处。</li>
+          <li><strong>收尾</strong>：一次性收尾最常见的是级进下行到主音，如 SF22-29 的 <span class="score">5 4 3 2 1</span>、鉄道唱歌 的 <span class="score">2 2 3 2 1</span>；也有上行琶音收尾，如 189系、こだま。</li>
+        </ul>
+        <h3>织体：三层就够，外加结束标志</h3>
+        <p>平均只有约 3 个音同时响。手工扒谱里的分工很固定：</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>层</th><th>常用音色</th><th>写法</th></tr></thead>
+          <tbody>
+            <tr><td>旋律</td><td>Celesta、Vibraphone、Music Box、Pad、Honky-tonk Piano、Jazz Guitar</td><td>常和另一个钟声类音色同度或八度加倍</td></tr>
+            <tr><td>伴奏</td><td>分解和弦的钢琴、Pad、反复双音</td><td>八分音符分解和弦，或每拍、每半拍一个和弦点</td></tr>
+            <tr><td>高音闪烁层（可选）</td><td>FX Crystal</td><td>farewell：比旋律高两个八度的十六分音符琶音，给整体加光</td></tr>
+            <tr><td>低音</td><td>Acoustic Bass</td><td>轻、少：每小节 1–3 个音，根音–五音或流行切分，音区 A2–F3</td></tr>
+            <tr><td>打击乐（少见）</td><td>Jingle Bell、Bell Tree</td><td>只做点缀</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p><strong>结束标志</strong>在一次性作品里几乎是标配：琶音或扫弦的主和弦（春、farewell、鉄道唱歌），Bell Tree 刮奏，或上行的主和弦琶音（189系）。</p>
+        <h3>节奏</h3>
+        <ul>
+          <li>约 120 BPM，旋律每秒约 3 个音，以八分音符为主。</li>
+          <li>车内铃更慢，更站在拍上：旋律起音在正拍的比例是 62%，发车铃约 31%。</li>
+          <li>一个特征节奏型能帮人记住：鉄道唱歌 的附点「タッカ」，farewell 低音的流行切分，189系 的十六分切分。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="arrange" data-name="改编与变体" data-code="CH06">
+      <div class="prose">
+        <h3 style="margin-top:0">名曲怎么改成发车铃</h3>
+        <ul>
+          <li><strong>截哪一段</strong>：同一首歌在不同车站用不同段落。上尾市歌、熊谷市歌、熱き星たちよ 分 A メロ版和サビ版，Over 分 A メロ、間奏、サビ三版。没有分段的，通常取最有辨识度的开头或副歌。</li>
+          <li><strong>允许更长</strong>：为了把一个乐句唱完，中位长度 13.5 秒，只有 19% 在 10 秒内。70% 停在主和弦上，也就是乐句的自然终止处。</li>
+          <li><strong>短的改编只取标志</strong>：ハイケンスのセレナーデ 只用开头两小节的分解和弦动机；鉄道唱歌 用了第一段完整的 8 小节，并保留附点节奏。</li>
+          <li><strong>换成铃声的样子</strong>：移到明亮音区，用钟声类音色并加倍旋律，伴奏简化成每拍一个音或分解和弦。原曲的和声骨架照用，所以改编里七和弦、副属和弦比原创多。</li>
+          <li><strong>原曲来源</strong>：昭和歌谣最多，其次是古典器乐、市歌、迪士尼和广告歌、体育应援歌，多半和车站所在地有关。</li>
+        </ul>
+        <h3>一曲多版本</h3>
+        <p>181 个文件里只有 113 个不同的旋律。版本标记的类型如下（按文件计，一个文件可以有多个标记）：</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>做法</th><th class="n">文件</th><th>例子</th></tr></thead>
+          <tbody>
+            <tr><td>另一版本</td><td class="n">40</td><td>V1/V2、(2)、-1/-2、NewVer，如 海岸通り V1/V2、JR-SH5-1/-2</td></tr>
+            <tr><td>移调</td><td class="n">13</td><td>JR-SH1 高音ver 实测 +1 半音，JR-SH4 低音ver 实测 −1 半音；Gota del Vient 微妙に低い/高い 实测约 ∓0.4–0.5 半音，落在两个音之间</td></tr>
+            <tr><td>变速</td><td class="n">11</td><td>アマリリス テンポが遅い 实测约为原速 0.7 倍；Verde Rayo 速い/遅い</td></tr>
+            <tr><td>截取段落</td><td class="n">9</td><td>上尾市歌 A メロ / サビ</td></tr>
+            <tr><td>结构和长度</td><td class="n">8</td><td>エンドレス（循环）、ショートカット、曲短縮、フェードアウト、途中で終わる、前奏あり</td></tr>
+            <tr><td>站点专用版</td><td class="n">7</td><td>JR-SH5 東京ver、SF22-29 柏ver/金町ver、HANDS 鴻巣/北鴻巣/吹上ver</td></tr>
+            <tr><td>配器和音色</td><td class="n">4</td><td>高原 鐘強調、音色違い；Verde Rayo 低音強調</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose"><p>用处可以推断出来：相邻站台用同一首曲子的不同版本，既统一又分得清；循环版、缩短版配合不同的发车操作。</p></div>
+    </section>
+
+    <section id="cases" data-name="案例精读" data-code="CH07">
+      <div class="prose"><p>下面的旋律和和声都来自手工扒谱的 MIDI，是逐音读出来的。简谱里 <span class="score"><span class='oh'>1</span></span> 是高八度，<span class="score"><span class='ol'>7</span></span> 是低八度。</p></div>
+      <div class="cases">
+        <article class="case"><h3><span class="tag orig">原创发车铃</span>SF22-29</h3><p class="meta">D 大调 · 110 BPM · 约 6.5 秒</p><span class="score score-line">6 <span class='oh'>1</span> 7 <span class='oh'>1</span> 5 | <span class='oh'>1</span> 7 <span class='oh'>1</span> 4 5 4 | 3 2 1</span><ul><li>邻音动机 <span class="score"><span class='oh'>1</span> 7 <span class='oh'>1</span></span> 出现两次，然后从 5 级一路级进下行到主音。</li><li>伴奏是中音区的和弦点，大致是 ii – I … ii7 – V7 – I。</li><li>柔和的 Pad 音色，全曲只有两层。</li></ul></article>
+        <article class="case"><h3><span class="tag orig">原创发车铃</span>farewell</h3><p class="meta">C 大调 · 110 BPM · 4 小节 · 约 9.8 秒</p><span class="score score-line">4 1 1 4 3 2 | 3 <span class='ol'>7</span> 1 3 2 1 | 2 <span class='ol'>6</span> ♭<span class='ol'>6</span> 2 1 <span class='ol'>7</span> | 1</span><ul><li>每小节先下跳四五度，再用八分音符绕回来；这个动机每小节下移一级。</li><li>低音同步下行 F–E–D–C，和声 IV – iii – ii – I。第 3 小节有一处半音邻音 A♭。</li><li>高两个八度的十六分音符琶音跟着和弦走，最后用跨两个八度的扫弦式 C 大三和弦收尾。</li></ul></article>
+        <article class="case"><h3><span class="tag orig">原创发车铃</span>春（SF12，可能是旧版）</h3><p class="meta">C 大调 · 110 BPM · 4 小节</p><ul><li>右手八分音符分解和弦，像八音盒；顶音是一条 <span class="score"><span class='oh'>3</span> <span class='oh'>2</span> <span class='oh'>1</span> 7</span> 的下行线，左手二分音符做对位。</li><li>和声 I V | IV V | I V | vi V | I：第 2 小节半终止，第 4 小节回到主和弦。</li><li>第 1、3 小节完全相同，问答结构，结尾琶音式主和弦。</li></ul></article>
+        <article class="case"><h3><span class="tag car">车内铃</span>のぞみ</h3><p class="meta">C 大调 · 105 BPM · 约 7 秒</p><span class="score score-line">3 ♭3 3 5 <span class='oh'>1</span> | 4 3 4 6 <span class='oh'>2</span> | 7 ♭7 7 <span class='oh'>1</span> <span class='oh'>2</span> 7 | <span class='oh'>1</span></span><ul><li>同一个「邻音 + 上行琶音」动机依次落在 I、IV、V 上，最后回到 I。</li><li>半音邻音 ♭3、♭7 是全曲最亮的点。</li><li>只用钢片琴，两个声部。</li></ul></article>
+        <article class="case"><h3><span class="tag car">车内铃</span>キハ85</h3><p class="meta">C 大调 · 约 9.7 秒</p><ul><li>开头一个八分音符的上行音阶（G4→G5），像拉开幕布。</li><li>接着是 I – IV – III7 – vi – II7 – V7 – I 的副属和弦链。</li><li>车内铃也可以有和声上的起伏。</li></ul></article>
+        <article class="case"><h3><span class="tag car">车内铃</span>こだま / 373系</h3><p class="meta">3–4 秒</p><ul><li>こだま：<span class="score">1 3 5 1</span>（A–C♯–E–A），颤音琴长音。</li><li>373系：<span class="score">1 2 3 5</span> 加一个主和弦，在 E7–E8 的极高音区，像小铃铛。</li><li>最短的车内铃就是一个上行的主和弦琶音。</li></ul></article>
+        <article class="case"><h3><span class="tag car">车内铃</span>189系</h3><p class="meta">C 大调 · 160 BPM · 约 13 秒，车内铃里最长</p><ul><li>爵士吉他音色，动机 <span class="score">5 4 5 6 5</span> 第二次出现时把 F 换成 F♯。</li><li>接一段十六分切分的下行线条，低音 G–F–E 下行。</li><li>最后是 C 大三和弦的上行琶音。</li></ul></article>
+        <article class="case"><h3><span class="tag arr">车内铃 · 改编</span>鉄道唱歌</h3><p class="meta">D 大调 · 120 BPM · 约 8 秒</p><span class="score score-line">1 1 1 2 3 3 3 2 | 1 1 1 <span class='ol'>6</span> <span class='ol'>5</span> | <span class='ol'>6</span> <span class='ol'>6</span> <span class='ol'>5</span> <span class='ol'>6</span> 1 1 3 3 | 2 2 3 2 1</span><ul><li>完整的第一段，每拍一个附点八分加一个十六分，保留原曲的「タッカ」节奏。</li><li>钢琴和八音盒同度，伴奏每拍一个音。</li><li>最后在高音区收一个琶音主和弦。</li></ul></article>
+        <article class="case"><h3><span class="tag arr">车内铃 · 改编</span>ハイケンスのセレナーデ</h3><p class="meta">D 大调 · 95 BPM · 约 6 秒</p><ul><li>只用原曲开头的分解和弦动机，两小节。</li><li>和声 IV – I – V – I，落在 D 大三和弦上。</li></ul></article>
+        <article class="case"><h3><span class="tag unk">用途不明</span>senronokanata</h3><p class="meta">A♭ 大调 · 110 BPM</p><ul><li>三音弱起 <span class="score">7 1 5 → 3</span> 连续三次。</li><li>根音–五音交替的低音，反复的双音伴奏，Jingle Bell 点缀。</li><li>最后琶音主和弦加 Bell Tree 刮奏。</li></ul></article>
+      </div>
+    </section>
+
+    <section id="howto" data-name="怎么写" data-code="CH08">
+      <div class="prose">
+        <h3 style="margin-top:0">先定三件事</h3>
+        <ol>
+          <li><strong>用途</strong>：站台发车铃，还是车内铃？</li>
+          <li><strong>怎么播放</strong>：循环播放的，结尾要能接回开头，可以停在 V 或 2 级；一次性播放的，结尾要有明确的终止和结束标志。</li>
+          <li><strong>原创还是改编？</strong></li>
+        </ol>
+        <h3>原创：4 小节模板</h3>
+        <p>按约 120 BPM、4/4 拍写 4 小节，正好约 8 秒。这是数据里最典型的形态：原创中位长度 8.1 秒，85% 在 10 秒内，JR-SH 系列几乎都是 7.1–7.5 秒。</p>
+      </div>
+      <div class="template">
+        <div class="bar-cell"><span class="bn">第 1 小节</span><b>提出动机</b><p>半小节到一小节，用主和弦音 1、3、5 加一两个经过音。</p><span class="chord">I</span></div>
+        <div class="bar-cell"><span class="bn">第 2 小节</span><b>重复或挪一级</b><p>原样重复，或整体上移、下移一级。</p><span class="chord">ii–V · IV–V · IV</span></div>
+        <div class="bar-cell"><span class="bn">第 3 小节</span><b>到最高音</b><p>全曲最高音放在约三分之一到一半处。</p><span class="chord">vi · IV · iii</span></div>
+        <div class="bar-cell"><span class="bn">第 4 小节</span><b>收尾</b><p>级进下行到 1，或 V7 分解下行到 1。循环版停在 2 或 5。</p><span class="chord">V7–I · 循环版 V7sus4–V7</span></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>参数</th><th>建议</th><th>数据依据</th></tr></thead>
+          <tbody>
+            <tr><td>速度</td><td>110–130 BPM，旋律以八分音符为主，每秒约 3 个音</td><td>中位 120 BPM</td></tr>
+            <tr><td>调式</td><td>大调。想要个性可以借一个调式色彩，如 ♭VII–I、♭VI–♭VII–I；想要和风就用四七抜き五声</td><td>大调 87%</td></tr>
+            <tr><td>音区</td><td>旋律中心放在 A5 附近，大致 C5–E6；音域一个八度到一个半八度</td><td>中位 A5，91% 在 C5 以上；音域中位 14 个半音</td></tr>
+            <tr><td>音阶</td><td>1、3、5 当骨架，2、6 做连接，4、7 只当经过音和导音；半音最多一处，做邻音点缀</td><td>五声音级 82%，4、7 级 13%</td></tr>
+            <tr><td>和声</td><td>I、IV、V、vi、ii 就够；每 2–4 拍换一次；给一两个和弦加 sus4 或 add9；七和弦留给终止前的 V7；可以有一处副属和弦</td><td>约五分之一的拍子是 sus4/add9；原创七和弦中位数 0</td></tr>
+            <tr><td>织体</td><td>三层：旋律（钢片琴、钟琴、八音盒、颤音琴，加倍一层更亮），伴奏（马林巴或竖琴分解和弦，或电钢琴和弦点），轻低音（A2 以上，每小节 1–3 个音）；可选一层高音闪烁琶音</td><td>同时发声约 2.8 个</td></tr>
+            <tr><td>节奏</td><td>平直八分音符为主，放一个特征节奏型：附点、切分或三音弱起</td><td>鉄道唱歌、farewell、189系</td></tr>
+            <tr><td>结束标志</td><td>琶音或扫弦的主和弦、两声高音钟、Bell Tree 刮奏，或上行主和弦琶音</td><td>一次性作品几乎都有</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <h3>改编</h3>
+        <ol>
+          <li><strong>截段</strong>：取最有辨识度的几小节，通常是开头或副歌；也可以给不同车站截不同段落。</li>
+          <li><strong>长度</strong>：可以比原创长，10–16 秒，但要截在乐句终止处。</li>
+          <li><strong>保留标志性节奏</strong>，其余简化：伴奏改成每拍一个音、反拍和弦或分解和弦。</li>
+          <li><strong>移到 C5 以上</strong>，换成钟声类音色，旋律加倍。</li>
+          <li><strong>原曲的和声骨架照用</strong>，不必为了像发车铃去删掉七和弦。</li>
+        </ol>
+        <h3>车内铃</h3>
+        <ul>
+          <li>3–8 秒。最短的就是一个上行主和弦琶音。</li>
+          <li>一次性，所以旋律和和声都要收在主音和主和弦上。</li>
+          <li>更站在拍上，旋律更级进；不用低音，或只用很轻的低音。</li>
+        </ul>
+        <h3>做版本</h3>
+        <p>同一首旋律准备一两个版本，让相邻站台、不同线路分得开：移调 ±1–2 个半音，变速 ±5–10%，长版和短版，循环版和一次性版，或者突出某个乐器的版本。</p>
+        <h3>检查清单</h3>
+      </div>
+      <ul class="checklist">
+        <li><label for="ck1"><input type="checkbox" id="ck1"><span>一遍在 6–10 秒之间（改编 ≤ 16 秒，车内铃 3–8 秒）</span></label></li>
+        <li><label for="ck2"><input type="checkbox" id="ck2"><span>开头 2 秒就能认出是哪首：动机在第 1 小节就完整出现</span></label></li>
+        <li><label for="ck3"><input type="checkbox" id="ck3"><span>中途被按钮切断也不难受：每小节都落在稳定的和弦音上</span></label></li>
+        <li><label for="ck4"><input type="checkbox" id="ck4"><span>连续循环 3 遍不烦：没有刺耳的音色，没有太长的不协和</span></label></li>
+        <li><label for="ck5"><input type="checkbox" id="ck5"><span>旋律中心在 C5–E6，没有要靠重低音才成立的东西</span></label></li>
+        <li><label for="ck6"><input type="checkbox" id="ck6"><span>大调或明亮的调式；4、7 级和半音只做点缀</span></label></li>
+        <li><label for="ck7"><input type="checkbox" id="ck7"><span>和声最多每 2 拍换一次，用一两个 sus4 或 add9 增加色彩</span></label></li>
+        <li><label for="ck8"><input type="checkbox" id="ck8"><span>一次性版本有明确终止（V→I，旋律落 1）和结束标志；循环版结尾能顺接开头</span></label></li>
+        <li><label for="ck9"><input type="checkbox" id="ck9"><span>和相邻站台的旋律听得出区别</span></label></li>
+      </ul>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>常见误区</th><th>为什么不好</th><th>数据</th></tr></thead>
+          <tbody>
+            <tr><td>写得太长</td><td>车不等人，被切断的概率大</td><td>原创 85% 在 10 秒内</td></tr>
+            <tr><td>低音很重</td><td>车站喇叭放不出，还会糊</td><td>低于 C3 的音几乎为 0</td></tr>
+            <tr><td>和声太密、七和弦太多</td><td>几秒钟里听不清，也不像铃声</td><td>原创七和弦拍占比中位数 0</td></tr>
+            <tr><td>小调、阴暗</td><td>发车铃要催促，但不该制造紧张</td><td>大调 87%</td></tr>
+            <tr><td>旋律在中低音区</td><td>被站台噪音盖住</td><td>原创 91% 的旋律中心在 C5 以上</td></tr>
+            <tr><td>一次性作品结尾含糊</td><td>听的人不知道响完没有</td><td>车内铃 7/7 收在主和弦</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="practice" data-name="实践作品" data-code="CH09">
+      <div class="prose"><p>按上面的方法写了 5 首、6 个文件。每个音都是手写的，用 FluidR3 GM 音色库渲染试听。播放时，正在响的音会在卷帘上亮起来；深色条是旋律，灰色是伴奏和低音。</p></div>
+      <div class="pieces" id="pieces"></div>
+    </section>
+
+    <section id="notes" data-name="局限与来源" data-code="CH10">
+      <div class="prose">
+        <h3 style="margin-top:0">这些数字怎么来的</h3>
+        <ul>
+          <li>181 首发车铃先用开源模型 Harmonica 自动转成 MIDI，音符约四分之三正确，常见错误是八度错和多出的泛音。调、速度、长度、音级分布、和弦框架和最后的和弦比较可靠，和手工扒谱对照过。</li>
+          <li>旋律音程在自动转写里不可靠，最高声部会混进伴奏，所以只用 7 个手工扒谱的旋律声部统计。</li>
+          <li>调用 Krumhansl–Kessler 调性轮廓识别，会把关系大小调弄混；按 MIDI 和按音频识别，181 首里 69% 一致。</li>
+          <li>分类主要依据曲名，加上能查证的系列信息。英文标题、日文标题两组的出处未能查证，「不确定」的 11 首没有参与对比。</li>
+          <li>作品没有做听感实验。「不刺耳」「循环 3 遍不烦」仍然要靠试听判断。</li>
+        </ul>
+        <h3>参考</h3>
+        <ul class="sources">
+          <li><a href="https://dic.pixiv.net/a/Water_Crown" target="_blank" rel="noopener">Water Crown（pixiv 百科）</a>：東洋メディアリンクス 制作，1990 年代前半首先用于山手线目黑站，是使用车站最多的发车铃之一。</li>
+          <li><a href="https://dic.pixiv.net/a/Cielo_Estrellado" target="_blank" rel="noopener">Cielo Estrellado（pixiv 百科）</a>：与 Water Crown、Gota del Vient 同属西班牙语标题系列，最早用于五反田站。</li>
+          <li><a href="https://dic.nicovideo.jp/a/%E7%99%BA%E8%BB%8A%E3%83%A1%E3%83%AD%E3%83%87%E3%82%A3" target="_blank" rel="noopener">発車メロディ（ニコニコ大百科）</a>：SF-1「遊園地のある駅」（大崎）、SF-3「教会の見える駅」（秋叶原）等的使用车站。</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">发车铃创作指南 · 鉄道唱歌 为多梅稚 1900 年作曲，已进入公有领域；其余 4 首为本指南的原创练习。</div>
+</footer>
+
+<script>
+const DATA = {"lengths":{"orig":[{"name":"JR-SH1","sec":6.94,"jrsh":true},{"name":"JR-SH2","sec":7.62,"jrsh":true},{"name":"JR-SH3","sec":7.25,"jrsh":true},{"name":"JR-SH4","sec":7.13,"jrsh":true},{"name":"JR-SH5","sec":6.88,"jrsh":true},{"name":"JR-SH6","sec":7.33,"jrsh":true},{"name":"JR-SH7","sec":7.36,"jrsh":true},{"name":"JR-SH8","sec":7.54,"jrsh":true},{"name":"JR-SH9","sec":9.31,"jrsh":true},{"name":"SF-1 遊園地のある駅","sec":10.53,"jrsh":false},{"name":"SF-2 SF22-30","sec":18.43,"jrsh":false},{"name":"SF-3 教会の見える駅","sec":7.09,"jrsh":false},{"name":"SF-4 海の駅","sec":9.12,"jrsh":false},{"name":"SF-10-12 For tomorrow","sec":2.43,"jrsh":false},{"name":"SF10-31","sec":15.42,"jrsh":false},{"name":"SF10-38","sec":8.13,"jrsh":false},{"name":"SF10-43","sec":5.57,"jrsh":false},{"name":"SF10-60 チャイム","sec":6.24,"jrsh":false},{"name":"SF10-68","sec":8.83,"jrsh":false},{"name":"SF12 春","sec":10.5,"jrsh":false},{"name":"SF22-14","sec":7.87,"jrsh":false},{"name":"SF22-29","sec":6.78,"jrsh":false},{"name":"airy","sec":6.94,"jrsh":false},{"name":"A Sea Bird","sec":29.33,"jrsh":false},{"name":"blue daisy","sec":7.04,"jrsh":false},{"name":"cappuccino","sec":8.0,"jrsh":false},{"name":"Cielo Estrellado","sec":9.22,"jrsh":false},{"name":"dance on","sec":9.54,"jrsh":false},{"name":"farewell","sec":9.58,"jrsh":false},{"name":"Gota del Vient","sec":15.17,"jrsh":false},{"name":"mellow time","sec":8.64,"jrsh":false},{"name":"mint flavor","sec":6.5,"jrsh":false},{"name":"ML-24","sec":8.99,"jrsh":false},{"name":"morning cloud","sec":8.13,"jrsh":false},{"name":"Sea Green","sec":29.18,"jrsh":false},{"name":"see you again","sec":7.74,"jrsh":false},{"name":"summer night","sec":7.9,"jrsh":false},{"name":"sunny islands","sec":8.19,"jrsh":false},{"name":"sunrise","sec":8.16,"jrsh":false},{"name":"twilight","sec":7.68,"jrsh":false},{"name":"Verde Rayo","sec":13.57,"jrsh":false},{"name":"Water Crown","sec":9.15,"jrsh":false},{"name":"朝つゆ","sec":8.96,"jrsh":false},{"name":"朝の静けさ","sec":7.65,"jrsh":false},{"name":"朝のプラットホーム","sec":9.73,"jrsh":false},{"name":"あざみ野","sec":7.97,"jrsh":false},{"name":"新たな季節","sec":6.37,"jrsh":false},{"name":"新たな街","sec":6.4,"jrsh":false},{"name":"淡い恋心","sec":6.4,"jrsh":false},{"name":"美しき丘","sec":9.76,"jrsh":false},{"name":"海辺の散歩","sec":8.38,"jrsh":false},{"name":"丘の上の風車小屋","sec":5.25,"jrsh":false},{"name":"小川のせせらぎ","sec":6.02,"jrsh":false},{"name":"思い出の街","sec":9.34,"jrsh":false},{"name":"カーネーション畑","sec":9.04,"jrsh":false},{"name":"海岸通り","sec":7.17,"jrsh":false},{"name":"風と共に","sec":7.71,"jrsh":false},{"name":"風の贈り物","sec":17.09,"jrsh":false},{"name":"風の吹くとき","sec":7.87,"jrsh":false},{"name":"木々の目覚め","sec":8.42,"jrsh":false},{"name":"キッズステーション","sec":9.54,"jrsh":false},{"name":"希望の朝","sec":6.43,"jrsh":false},{"name":"希望の鐘","sec":8.96,"jrsh":false},{"name":"希望のまち","sec":6.21,"jrsh":false},{"name":"銀杏並木","sec":9.66,"jrsh":false},{"name":"九月の風","sec":9.09,"jrsh":false},{"name":"くるみ遊び","sec":7.42,"jrsh":false},{"name":"薫風の街","sec":7.55,"jrsh":false},{"name":"公園通り","sec":8.67,"jrsh":false},{"name":"公園の楓","sec":9.54,"jrsh":false},{"name":"高原","sec":8.8,"jrsh":false},{"name":"高原のつぶやき","sec":10.18,"jrsh":false},{"name":"幸福の銀レール","sec":11.07,"jrsh":false},{"name":"コーラルリーフ","sec":6.56,"jrsh":false},{"name":"秋桜","sec":8.8,"jrsh":false}],"arr":[{"name":"It's a small world","sec":10.18,"jrsh":false},{"name":"Open Happiness","sec":7.36,"jrsh":false},{"name":"Over","sec":10.37,"jrsh":false},{"name":"We Love Marines","sec":14.37,"jrsh":false},{"name":"Zip-A-Dee-Doo-Dah","sec":10.75,"jrsh":false},{"name":"ああ、わが戸田市","sec":17.92,"jrsh":false},{"name":"青い山脈","sec":19.95,"jrsh":false},{"name":"上尾市歌","sec":13.44,"jrsh":false},{"name":"明日があるさ","sec":18.02,"jrsh":false},{"name":"明日は咲こう花咲こう","sec":11.14,"jrsh":false},{"name":"熱き星たちよ","sec":13.47,"jrsh":false},{"name":"アマリリス","sec":6.56,"jrsh":false},{"name":"雨のステイション","sec":17.44,"jrsh":false},{"name":"阿波踊り","sec":11.2,"jrsh":false},{"name":"いつでも夢を","sec":15.84,"jrsh":false},{"name":"ウイスキーが、お好きでしょ","sec":7.1,"jrsh":false},{"name":"上を向いて歩こう","sec":17.6,"jrsh":false},{"name":"オー・シャンゼリゼ","sec":15.04,"jrsh":false},{"name":"楽興の時","sec":16.26,"jrsh":false},{"name":"蒲田行進曲","sec":9.38,"jrsh":false},{"name":"歓喜の歌","sec":6.82,"jrsh":false},{"name":"汽車","sec":16.86,"jrsh":false},{"name":"きらきら星変奏曲","sec":15.26,"jrsh":false},{"name":"熊谷市歌","sec":13.39,"jrsh":false},{"name":"グリーン・グリーン","sec":15.55,"jrsh":false},{"name":"恋のメキシカンロック","sec":14.45,"jrsh":false},{"name":"公園の手品師","sec":11.71,"jrsh":false}],"car":[{"name":"189系","sec":13.03,"jrsh":false},{"name":"373系","sec":3.39,"jrsh":false},{"name":"ハイケンスのセレナーデ","sec":6.42,"jrsh":false},{"name":"キハ85","sec":9.68,"jrsh":false},{"name":"こだま","sec":4.07,"jrsh":false},{"name":"のぞみ","sec":7.14,"jrsh":false},{"name":"鉄道唱歌","sec":8.32,"jrsh":false}]},"degrees":{"orig":[0.3345,0.0078,0.083,0.0024,0.1424,0.0924,0.0034,0.1917,0.0106,0.0764,0.0078,0.0476],"arr":[0.3182,0.0007,0.0783,0.0031,0.1591,0.076,0.0032,0.221,0.0034,0.0805,0.003,0.0534],"car":[0.4063,0.0,0.0775,0.0034,0.161,0.0656,0.0039,0.1817,0.0045,0.0553,0.013,0.0276]},"degree_n":{"orig":65,"arr":23,"car":7},"audio":{"01":{"file":"../compositions/previews/01_%E6%99%A8%E5%85%89.mp3","dur":9.09},"02":{"file":"../compositions/previews/02_%E6%B8%AF%E9%A3%8E_%E5%BE%AA%E7%8E%AF%E7%89%88_%E4%B8%A4%E9%81%8D%2B%E7%BB%93%E5%B0%BE.mp3","dur":21.12},"03":{"file":"../compositions/previews/03_%E9%87%8C%E5%B1%B1.mp3","dur":12.83},"04":{"file":"../compositions/previews/04_%E9%89%84%E9%81%93%E5%94%B1%E6%AD%8C_%E5%8F%91%E8%BD%A6%E7%89%88.mp3","dur":8.51},"04b":{"file":"../compositions/previews/04b_%E9%89%84%E9%81%93%E5%94%B1%E6%AD%8C_2%E7%95%AA%E7%BA%BF%E7%89%88.mp3","dur":8.25},"05":{"file":"../compositions/previews/05_%E5%88%B0%E7%AB%99_%E8%BD%A6%E5%86%85%E9%93%83.mp3","dur":6.43}},"rolls":{"01":[[0.0,0.238,62,"a"],[0.0,0.476,50,"b"],[0.0,0.714,81,"m"],[0.0,1.905,57,"a"],[0.0,1.905,62,"a"],[0.0,1.905,66,"a"],[0.238,0.238,66,"a"],[0.476,0.238,69,"a"],[0.714,0.238,66,"a"],[0.714,0.238,78,"m"],[0.952,0.238,62,"a"],[0.952,0.238,74,"m"],[0.952,0.476,45,"b"],[1.19,0.238,66,"a"],[1.19,0.238,76,"m"],[1.429,0.238,69,"a"],[1.429,0.476,78,"m"],[1.667,0.238,66,"a"],[1.905,0.238,64,"a"],[1.905,0.476,52,"b"],[1.905,0.714,83,"m"],[1.905,0.952,59,"a"],[1.905,0.952,64,"a"],[1.905,0.952,67,"a"],[2.143,0.238,67,"a"],[2.381,0.238,71,"a"],[2.619,0.238,67,"a"],[2.619,0.238,79,"m"],[2.857,0.238,61,"a"],[2.857,0.238,76,"m"],[2.857,0.476,45,"b"],[2.857,0.952,57,"a"],[2.857,0.952,61,"a"],[2.857,0.952,67,"a"],[3.095,0.238,64,"a"],[3.095,0.238,78,"m"],[3.333,0.238,67,"a"],[3.333,0.476,79,"m"],[3.571,0.238,64,"a"],[3.81,0.238,62,"a"],[3.81,0.238,86,"m"],[3.81,0.476,47,"b"],[3.81,0.952,59,"a"],[3.81,0.952,62,"a"],[3.81,0.952,66,"a"],[4.048,0.238,66,"a"],[4.048,0.238,88,"m"],[4.286,0.238,71,"a"],[4.286,0.476,90,"m"],[4.524,0.238,66,"a"],[4.762,0.238,62,"a"],[4.762,0.238,88,"m"],[4.762,0.476,43,"b"],[4.762,0.952,59,"a"],[4.762,0.952,62,"a"],[4.762,0.952,67,"a"],[5.0,0.238,67,"a"],[5.0,0.238,86,"m"],[5.238,0.238,71,"a"],[5.238,0.238,83,"m"],[5.476,0.238,67,"a"],[5.476,0.238,79,"m"],[5.714,0.238,61,"a"],[5.714,0.238,81,"m"],[5.714,0.476,45,"b"],[5.714,0.952,57,"a"],[5.714,0.952,61,"a"],[5.714,0.952,67,"a"],[5.952,0.238,64,"a"],[5.952,0.238,79,"m"],[6.19,0.238,67,"a"],[6.19,0.238,76,"m"],[6.429,0.238,64,"a"],[6.429,0.238,73,"m"],[6.667,0.952,74,"m"],[6.667,1.19,50,"b"],[6.667,1.667,57,"a"],[6.667,1.667,62,"a"],[6.667,1.667,66,"a"],[6.667,1.667,74,"a"],[6.695,1.638,78,"a"],[6.724,1.61,81,"a"],[6.752,1.581,86,"a"]],"02":[[0.0,0.6,62,"a"],[0.0,0.6,65,"a"],[0.0,0.6,69,"a"],[0.0,0.6,72,"a"],[0.0,0.9,46,"b"],[0.3,0.3,84,"m"],[0.6,0.3,81,"m"],[0.9,0.6,53,"b"],[0.9,0.6,62,"a"],[0.9,0.6,65,"a"],[0.9,0.6,69,"a"],[0.9,0.6,72,"a"],[0.9,0.6,77,"m"],[1.5,0.3,79,"m"],[1.5,0.6,46,"b"],[1.8,0.6,81,"m"],[2.1,0.3,62,"a"],[2.1,0.3,65,"a"],[2.1,0.3,69,"a"],[2.1,0.3,72,"a"],[2.4,0.6,64,"a"],[2.4,0.6,67,"a"],[2.4,0.6,69,"a"],[2.4,0.6,72,"a"],[2.4,0.9,45,"b"],[2.7,0.3,79,"m"],[3.0,0.3,76,"m"],[3.3,0.6,52,"b"],[3.3,0.6,64,"a"],[3.3,0.6,67,"a"],[3.3,0.6,69,"a"],[3.3,0.6,72,"a"],[3.3,0.6,72,"m"],[3.9,0.3,74,"m"],[3.9,0.6,45,"b"],[4.2,0.6,76,"m"],[4.5,0.3,64,"a"],[4.5,0.3,67,"a"],[4.5,0.3,69,"a"],[4.5,0.3,72,"a"],[4.8,0.3,86,"m"],[4.8,0.6,65,"a"],[4.8,0.6,69,"a"],[4.8,0.6,70,"a"],[4.8,0.6,74,"a"],[4.8,0.9,43,"b"],[5.1,0.3,84,"m"],[5.4,0.3,82,"m"],[5.7,0.3,81,"m"],[5.7,0.6,50,"b"],[5.7,0.6,65,"a"],[5.7,0.6,69,"a"],[5.7,0.6,70,"a"],[5.7,0.6,74,"a"],[6.0,0.9,82,"m"],[6.3,0.6,43,"b"],[6.9,0.3,65,"a"],[6.9,0.3,69,"a"],[6.9,0.3,70,"a"],[6.9,0.3,74,"a"],[7.2,0.3,79,"m"],[7.2,0.6,65,"a"],[7.2,0.6,67,"a"],[7.2,0.6,70,"a"],[7.2,0.6,72,"a"],[7.2,0.9,48,"b"],[7.5,0.3,81,"m"],[7.8,0.6,77,"m"],[8.1,0.3,43,"b"],[8.1,0.3,65,"a"],[8.1,0.3,67,"a"],[8.1,0.3,70,"a"],[8.1,0.3,72,"a"],[8.4,0.6,64,"a"],[8.4,0.6,67,"a"],[8.4,0.6,70,"a"],[8.4,0.6,72,"a"],[8.4,0.6,76,"m"],[8.4,0.9,48,"b"],[9.0,0.3,79,"m"],[9.3,0.3,47,"b"],[9.3,0.3,64,"a"],[9.3,0.3,67,"a"],[9.3,0.3,70,"a"],[9.3,0.3,72,"a"],[9.6,0.6,62,"a"],[9.6,0.6,65,"a"],[9.6,0.6,69,"a"],[9.6,0.6,72,"a"],[9.6,0.9,46,"b"],[9.9,0.3,84,"m"],[10.2,0.3,81,"m"],[10.5,0.6,53,"b"],[10.5,0.6,62,"a"],[10.5,0.6,65,"a"],[10.5,0.6,69,"a"],[10.5,0.6,72,"a"],[10.5,0.6,77,"m"],[11.1,0.3,79,"m"],[11.1,0.6,46,"b"],[11.4,0.6,81,"m"],[11.7,0.3,62,"a"],[11.7,0.3,65,"a"],[11.7,0.3,69,"a"],[11.7,0.3,72,"a"],[12.0,0.6,64,"a"],[12.0,0.6,67,"a"],[12.0,0.6,69,"a"],[12.0,0.6,72,"a"],[12.0,0.9,45,"b"],[12.3,0.3,79,"m"],[12.6,0.3,76,"m"],[12.9,0.6,52,"b"],[12.9,0.6,64,"a"],[12.9,0.6,67,"a"],[12.9,0.6,69,"a"],[12.9,0.6,72,"a"],[12.9,0.6,72,"m"],[13.5,0.3,74,"m"],[13.5,0.6,45,"b"],[13.8,0.6,76,"m"],[14.1,0.3,64,"a"],[14.1,0.3,67,"a"],[14.1,0.3,69,"a"],[14.1,0.3,72,"a"],[14.4,0.3,86,"m"],[14.4,0.6,65,"a"],[14.4,0.6,69,"a"],[14.4,0.6,70,"a"],[14.4,0.6,74,"a"],[14.4,0.9,43,"b"],[14.7,0.3,84,"m"],[15.0,0.3,82,"m"],[15.3,0.3,81,"m"],[15.3,0.6,50,"b"],[15.3,0.6,65,"a"],[15.3,0.6,69,"a"],[15.3,0.6,70,"a"],[15.3,0.6,74,"a"],[15.6,0.9,82,"m"],[15.9,0.6,43,"b"],[16.5,0.3,65,"a"],[16.5,0.3,69,"a"],[16.5,0.3,70,"a"],[16.5,0.3,74,"a"],[16.8,0.3,79,"m"],[16.8,0.6,65,"a"],[16.8,0.6,67,"a"],[16.8,0.6,70,"a"],[16.8,0.6,72,"a"],[16.8,0.9,48,"b"],[17.1,0.3,81,"m"],[17.4,0.6,77,"m"],[17.7,0.3,43,"b"],[17.7,0.3,65,"a"],[17.7,0.3,67,"a"],[17.7,0.3,70,"a"],[17.7,0.3,72,"a"],[18.0,0.6,64,"a"],[18.0,0.6,67,"a"],[18.0,0.6,70,"a"],[18.0,0.6,72,"a"],[18.0,0.6,76,"m"],[18.0,0.9,48,"b"],[18.6,0.3,79,"m"],[18.9,0.3,47,"b"],[18.9,0.3,64,"a"],[18.9,0.3,67,"a"],[18.9,0.3,70,"a"],[18.9,0.3,72,"a"],[19.2,1.8,41,"b"],[19.2,1.8,64,"a"],[19.2,1.8,77,"m"],[19.23,1.77,67,"a"],[19.26,1.74,69,"a"],[19.29,1.71,72,"a"]],"03":[[0.0,0.312,55,"a"],[0.0,0.625,74,"m"],[0.0,1.875,67,"a"],[0.0,2.5,55,"a"],[0.0,2.5,62,"a"],[0.312,0.312,62,"a"],[0.625,0.312,67,"a"],[0.625,0.312,76,"m"],[0.938,0.312,62,"a"],[0.938,0.312,74,"m"],[1.25,0.312,55,"a"],[1.25,0.625,71,"m"],[1.562,0.312,62,"a"],[1.875,0.312,67,"a"],[1.875,0.312,69,"m"],[2.188,0.312,62,"a"],[2.188,0.312,71,"m"],[2.5,0.312,52,"a"],[2.5,0.625,79,"m"],[2.5,2.5,52,"a"],[2.5,2.5,59,"a"],[2.812,0.312,59,"a"],[3.125,0.312,67,"a"],[3.125,0.312,76,"m"],[3.438,0.312,59,"a"],[3.438,0.312,74,"m"],[3.75,0.312,52,"a"],[3.75,0.938,76,"m"],[4.062,0.312,59,"a"],[4.375,0.312,67,"a"],[4.688,0.312,59,"a"],[4.688,0.312,74,"m"],[5.0,0.312,57,"a"],[5.0,0.312,71,"m"],[5.0,1.25,57,"a"],[5.0,1.25,64,"a"],[5.312,0.312,64,"a"],[5.312,0.312,74,"m"],[5.625,0.312,69,"a"],[5.625,0.625,76,"m"],[5.938,0.312,64,"a"],[6.25,0.312,50,"a"],[6.25,0.625,79,"m"],[6.25,2.5,50,"a"],[6.25,2.5,57,"a"],[6.562,0.312,57,"a"],[6.875,0.312,62,"a"],[6.875,0.625,81,"m"],[7.188,0.312,57,"a"],[7.5,0.312,50,"a"],[7.5,0.312,79,"m"],[7.812,0.312,57,"a"],[7.812,0.312,76,"m"],[8.125,0.312,62,"a"],[8.125,0.312,74,"m"],[8.438,0.312,57,"a"],[8.438,0.312,71,"m"],[8.75,0.312,55,"a"],[8.75,0.625,69,"m"],[8.75,2.5,55,"a"],[8.75,2.5,62,"a"],[9.062,0.312,62,"a"],[9.375,0.625,67,"m"],[9.375,1.875,67,"a"],[9.531,0.062,69,"m"],[9.594,0.062,71,"m"],[9.656,0.062,74,"m"],[9.719,0.062,76,"m"],[9.781,1.25,79,"m"]],"04":[[0.0,0.341,84,"m"],[0.0,0.455,48,"b"],[0.227,0.136,64,"a"],[0.227,0.136,67,"a"],[0.227,0.136,72,"a"],[0.341,0.114,84,"m"],[0.455,0.341,84,"m"],[0.455,0.455,43,"b"],[0.682,0.136,64,"a"],[0.682,0.136,67,"a"],[0.682,0.136,72,"a"],[0.795,0.114,86,"m"],[0.909,0.341,88,"m"],[0.909,0.455,48,"b"],[1.136,0.136,64,"a"],[1.136,0.136,67,"a"],[1.136,0.136,72,"a"],[1.25,0.114,88,"m"],[1.364,0.341,88,"m"],[1.364,0.455,43,"b"],[1.591,0.136,64,"a"],[1.591,0.136,67,"a"],[1.591,0.136,72,"a"],[1.705,0.114,86,"m"],[1.818,0.341,84,"m"],[1.818,0.455,45,"b"],[2.045,0.136,64,"a"],[2.045,0.136,69,"a"],[2.045,0.136,72,"a"],[2.159,0.114,84,"m"],[2.273,0.341,84,"m"],[2.273,0.455,52,"b"],[2.5,0.136,64,"a"],[2.5,0.136,69,"a"],[2.5,0.136,72,"a"],[2.614,0.114,81,"m"],[2.727,0.455,43,"b"],[2.727,0.909,79,"m"],[2.955,0.136,62,"a"],[2.955,0.136,67,"a"],[2.955,0.136,71,"a"],[3.182,0.455,50,"b"],[3.409,0.136,62,"a"],[3.409,0.136,67,"a"],[3.409,0.136,71,"a"],[3.636,0.341,81,"m"],[3.636,0.455,41,"b"],[3.864,0.136,65,"a"],[3.864,0.136,69,"a"],[3.864,0.136,72,"a"],[3.977,0.114,81,"m"],[4.091,0.341,79,"m"],[4.091,0.455,48,"b"],[4.318,0.136,65,"a"],[4.318,0.136,69,"a"],[4.318,0.136,72,"a"],[4.432,0.114,81,"m"],[4.545,0.341,84,"m"],[4.545,0.455,48,"b"],[4.773,0.136,64,"a"],[4.773,0.136,67,"a"],[4.773,0.136,72,"a"],[4.886,0.114,84,"m"],[5.0,0.341,88,"m"],[5.0,0.455,43,"b"],[5.227,0.136,64,"a"],[5.227,0.136,67,"a"],[5.227,0.136,72,"a"],[5.341,0.114,88,"m"],[5.455,0.341,86,"m"],[5.455,0.455,43,"b"],[5.682,0.136,62,"a"],[5.682,0.136,65,"a"],[5.682,0.136,71,"a"],[5.795,0.114,86,"m"],[5.909,0.341,88,"m"],[5.909,0.455,50,"b"],[6.136,0.136,62,"a"],[6.136,0.136,65,"a"],[6.136,0.136,71,"a"],[6.25,0.114,86,"m"],[6.364,0.909,84,"m"],[6.364,1.136,48,"b"],[6.364,1.364,72,"a"],[6.391,1.336,76,"a"],[6.418,1.309,79,"a"],[6.445,1.282,84,"a"],[6.818,0.227,91,"a"],[7.045,0.682,96,"a"]],"04b":[[0.0,0.325,86,"m"],[0.0,0.433,50,"b"],[0.216,0.13,66,"a"],[0.216,0.13,69,"a"],[0.216,0.13,74,"a"],[0.325,0.108,86,"m"],[0.433,0.325,86,"m"],[0.433,0.433,45,"b"],[0.649,0.13,66,"a"],[0.649,0.13,69,"a"],[0.649,0.13,74,"a"],[0.758,0.108,88,"m"],[0.866,0.325,90,"m"],[0.866,0.433,50,"b"],[1.082,0.13,66,"a"],[1.082,0.13,69,"a"],[1.082,0.13,74,"a"],[1.19,0.108,90,"m"],[1.299,0.325,90,"m"],[1.299,0.433,45,"b"],[1.515,0.13,66,"a"],[1.515,0.13,69,"a"],[1.515,0.13,74,"a"],[1.623,0.108,88,"m"],[1.732,0.325,86,"m"],[1.732,0.433,47,"b"],[1.948,0.13,66,"a"],[1.948,0.13,71,"a"],[1.948,0.13,74,"a"],[2.056,0.108,86,"m"],[2.165,0.325,86,"m"],[2.165,0.433,54,"b"],[2.381,0.13,66,"a"],[2.381,0.13,71,"a"],[2.381,0.13,74,"a"],[2.489,0.108,83,"m"],[2.597,0.433,45,"b"],[2.597,0.866,81,"m"],[2.814,0.13,64,"a"],[2.814,0.13,69,"a"],[2.814,0.13,73,"a"],[3.03,0.433,52,"b"],[3.247,0.13,64,"a"],[3.247,0.13,69,"a"],[3.247,0.13,73,"a"],[3.463,0.325,83,"m"],[3.463,0.433,43,"b"],[3.68,0.13,67,"a"],[3.68,0.13,71,"a"],[3.68,0.13,74,"a"],[3.788,0.108,83,"m"],[3.896,0.325,81,"m"],[3.896,0.433,50,"b"],[4.113,0.13,67,"a"],[4.113,0.13,71,"a"],[4.113,0.13,74,"a"],[4.221,0.108,83,"m"],[4.329,0.325,86,"m"],[4.329,0.433,50,"b"],[4.545,0.13,66,"a"],[4.545,0.13,69,"a"],[4.545,0.13,74,"a"],[4.654,0.108,86,"m"],[4.762,0.325,90,"m"],[4.762,0.433,45,"b"],[4.978,0.13,66,"a"],[4.978,0.13,69,"a"],[4.978,0.13,74,"a"],[5.087,0.108,90,"m"],[5.195,0.325,88,"m"],[5.195,0.433,45,"b"],[5.411,0.13,64,"a"],[5.411,0.13,67,"a"],[5.411,0.13,73,"a"],[5.519,0.108,88,"m"],[5.628,0.325,90,"m"],[5.628,0.433,52,"b"],[5.844,0.13,64,"a"],[5.844,0.13,67,"a"],[5.844,0.13,73,"a"],[5.952,0.108,88,"m"],[6.061,0.866,86,"m"],[6.061,1.082,50,"b"],[6.061,1.299,74,"a"],[6.087,1.273,78,"a"],[6.113,1.247,81,"a"],[6.139,1.221,86,"a"],[6.494,0.216,93,"a"],[6.71,0.649,98,"a"]],"05":[[0.0,0.652,84,"m"],[0.0,1.957,65,"a"],[0.0,1.957,69,"a"],[0.0,1.957,72,"a"],[0.652,0.652,89,"m"],[1.304,0.652,93,"m"],[1.957,0.326,91,"m"],[1.957,0.652,64,"a"],[1.957,0.652,67,"a"],[1.957,0.652,70,"a"],[2.283,0.326,88,"m"],[2.609,1.304,89,"m"],[2.609,1.63,65,"a"],[2.609,1.63,65,"a"],[2.609,1.63,69,"a"],[2.609,1.63,72,"a"],[2.654,1.585,69,"a"],[2.7,1.539,72,"a"],[2.746,1.493,77,"a"]]}};
+const PIECES = [
+  { key: "01", name: "01 晨光", tag: ["orig", "原创 · 标准型"], meta: "D 大调 · 126 BPM · 一遍 7.6 秒",
+    score: "1 = D5　5. 3 1 2 3 | 6. 4 2 3 4 | <span class='oh'>1</span> <span class='oh'>2</span> <span class='oh'>3</span> <span class='oh'>2</span> <span class='oh'>1</span> 6 4 | 5 4 2 <span class='ol'>7</span> 1 —",
+    why: "4 小节模板：一小节动机，下一小节上移二度；第 3 小节到最高音 <span class='oh'>3</span>；第 4 小节用 V7 分解和弦下行解决到主音，竖琴琶音收尾。和声 I | ii V7 | vi IV | V7 I。" },
+  { key: "02", name: "02 港风（循环版）", tag: ["orig", "原创 · 循环型"], meta: "F 大调 · 100 BPM · 一遍 9.6 秒 · 试听为两遍加尾声",
+    score: "1 = F5　0 5 3 1 2 3 | 0 2 <span class='ol'>7</span> <span class='ol'>5</span> <span class='ol'>6</span> <span class='ol'>7</span> | 6 5 4 3 4 0 | 2 3 1 <span class='ol'>7</span> 2 0",
+    why: "B♭maj7 – Am7 – Gm7 – C7sus4 – C7 一路往下，结尾停在 V7、旋律停在 2 级，听起来还没完，正好接回开头。需要结束时接 Fmaj9 尾声。" },
+  { key: "03", name: "03 里山", tag: ["orig", "原创 · 和风"], meta: "G 大调五声 · 96 BPM · 一遍 10 秒",
+    score: "1 = G4　5 6 5 3 2 3 | <span class='oh'>1</span> 6 5 6. 5 | 3 5 6 <span class='oh'>1</span> <span class='oh'>2</span> | <span class='oh'>1</span> 6 5 3 2 1",
+    why: "只用 1 2 3 5 6，4、7 级占比 0。不用三和弦，只用空五度；古筝、竖琴五声分解、弦乐、开头和结尾各一下管钟。2→1 落主音后古筝刮奏到高八度。" },
+  { key: "04", name: "04 鉄道唱歌 发车版", tag: ["arr", "改编 · 公有领域"], meta: "C 大调 · 132 BPM · 一遍 7.3 秒",
+    score: "1 = C6　1 1 1 2 3 3 3 2 | 1 1 1 <span class='ol'>6</span> <span class='ol'>5</span> — | <span class='ol'>6</span> <span class='ol'>6</span> <span class='ol'>5</span> <span class='ol'>6</span> 1 1 3 3 | 2 2 3 2 1 —",
+    why: "截整段第一段，保留附点「タッカ」节奏；钟琴主奏、八音盒低八度加倍；伴奏是反拍短和弦加根音–五音低音，模拟车轮声；竖琴琶音加两声钟收尾。" },
+  { key: "04b", name: "04b 鉄道唱歌 2番线版", tag: ["arr", "改编 · 变体"], meta: "D 大调 · 139 BPM · 一遍 6.9 秒",
+    score: "1 = D6　同 04，整体升 2 个半音",
+    why: "同一编曲升 2 个半音、提速 5%，作为另一站台的版本：既是同一首曲子，又和 04 分得清。" },
+  { key: "05", name: "05 到站", tag: ["car", "车内铃"], meta: "F 大调 · 92 BPM · 约 4 秒",
+    score: "1 = F6　<span class='ol'>5</span> 1 3 2 <span class='ol'>7</span> | 1 —",
+    why: "上行琶音 5–1–3 引起注意，2–7–1 干脆终止，旋律和和声都收在主音上。只有旋律、铺底和结尾琶音，不用低音。" },
+];
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(SVGNS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };
+
+/* ---------- route map + current station ---------- */
+(function route() {
+  const sections = [...document.querySelectorAll("main section[data-name]")];
+  const list = document.getElementById("route");
+  sections.forEach((s, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="#${s.id}"><span><span class="code">${s.dataset.code}</span>${s.dataset.name}</span></a>`;
+    list.appendChild(li);
+    const prev = sections[i - 1], next = sections[i + 1];
+    const sign = document.createElement("header");
+    sign.className = "sign";
+    sign.innerHTML = `<div class="sign-main"><span class="sign-no">${s.dataset.code}</span><h2>${s.dataset.name}</h2></div>
+      <div class="sign-bar"><span>${prev ? `<a href="#${prev.id}">← ${prev.dataset.name}</a>` : "起点"}</span><span>${next ? `<a href="#${next.id}">${next.dataset.name} →</a>` : "终点"}</span></div>`;
+    s.prepend(sign);
+  });
+  const links = [...list.querySelectorAll("a")];
+  const mark = (id) => links.forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === "#" + id ? "true" : "false"));
+  mark(sections[0].id);
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible.length) mark(visible[0].target.id);
+    }, { rootMargin: "-10% 0px -70% 0px" });
+    sections.forEach(s => io.observe(s));
+  }
+})();
+
+/* ---------- tooltips ---------- */
+function attachTip(fig) {
+  const tip = fig.querySelector(".tip");
+  const show = (target, evt) => {
+    const box = fig.getBoundingClientRect();
+    const r = target.getBoundingClientRect();
+    tip.textContent = target.dataset.tip;
+    tip.hidden = false;
+    tip.style.left = `${r.left + r.width / 2 - box.left}px`;
+    tip.style.top = `${r.top - box.top}px`;
+  };
+  fig.addEventListener("pointerover", (e) => { const t = e.target.closest("[data-tip]"); if (t) show(t, e); });
+  fig.addEventListener("pointerout", (e) => { if (e.target.closest("[data-tip]")) tip.hidden = true; });
+  fig.addEventListener("focusin", (e) => { const t = e.target.closest("[data-tip]"); if (t) show(t, e); });
+  fig.addEventListener("focusout", () => { tip.hidden = true; });
+}
+
+/* ---------- chart: lengths ---------- */
+let lengthTableDone = false, degreeTableDone = false;
+function lengths() {
+  const svg = document.getElementById("svg-length");
+  const W = Math.max(Math.round(svg.parentElement.clientWidth) - 34, 320), left = W < 480 ? 74 : 92, right = 16, top = 26, rowH = 72, x0 = 0, x1 = 31;
+  svg.setAttribute("viewBox", `0 0 ${W} 270`);
+  svg.replaceChildren();
+  const x = (s) => left + (Math.min(Math.max(s, x0), x1) - x0) / (x1 - x0) * (W - left - right);
+  const rows = [["orig", "原创发车铃"], ["arr", "改编发车铃"], ["car", "车内铃"]];
+  const grid = el("g", { class: "grid" }, svg);
+  const step = W < 480 ? 10 : 5;
+  for (let t = step; t <= 30; t += step) {
+    el("line", { x1: x(t), x2: x(t), y1: top - 8, y2: top + rowH * 3 - 6 }, grid);
+    el("text", { x: x(t), y: top + rowH * 3 + 12, "text-anchor": "middle", class: "axis-label" }, svg).textContent = t % 1 ? t.toFixed(1) : t;
+  }
+  el("text", { x: (left + W - right) / 2, y: top + rowH * 3 + 32, "text-anchor": "middle", class: "axis-label" }, svg).textContent = "一遍的有效长度（秒）";
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const tbody = document.querySelector("#table-length tbody");
+  rows.forEach(([g, label], i) => {
+    const cy = top + rowH * i + rowH / 2 - 8;
+    el("text", { x: left - 12, y: cy + 4, "text-anchor": "end", style: "fill: var(--ink)" }, svg).textContent = label;
+    const items = DATA.lengths[g];
+    items.forEach(d => {
+      const c = el("circle", { cx: x(d.sec), cy: cy + (rnd() - 0.5) * 30, r: 5, class: `dot f-${g}${d.jrsh ? " jrsh" : ""}`, "data-tip": `${d.name} · ${d.sec.toFixed(1)} 秒` }, svg);
+      if (!lengthTableDone) tbody.insertAdjacentHTML("beforeend", `<tr><td>${d.name}</td><td>${label}</td><td class="n">${d.sec.toFixed(1)}</td></tr>`);
+    });
+    const secs = items.map(d => d.sec).sort((a, b) => a - b);
+    const m = secs.length % 2 ? secs[(secs.length - 1) / 2] : (secs[secs.length / 2 - 1] + secs[secs.length / 2]) / 2;
+    el("line", { x1: x(m), x2: x(m), y1: cy - 20, y2: cy + 20, class: "median" }, svg);
+    el("text", { x: x(m), y: cy - 25, "text-anchor": "middle", class: "median-label" }, svg).textContent = `中位 ${m.toFixed(1)} 秒`;
+  });
+  lengthTableDone = true;
+}
+
+/* ---------- chart: scale degrees ---------- */
+function degrees() {
+  const svg = document.getElementById("svg-degree");
+  svg.replaceChildren();
+  const names = ["1", "降2", "2", "降3", "3", "4", "升4", "5", "降6", "6", "降7", "7"];
+  const groups = [["orig", "原创发车铃"], ["arr", "改编发车铃"], ["car", "车内铃"]];
+  const W = Math.max(Math.round(svg.parentElement.clientWidth) - 34, 320), left = 44, right = 8, top = 12, bottom = 34, H = 300, ymax = 0.45;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const y = (v) => top + (1 - v / ymax) * (H - top - bottom);
+  const grid = el("g", { class: "grid" }, svg);
+  for (let v = 0; v <= 0.4001; v += 0.1) {
+    el("line", { x1: left, x2: W - right, y1: y(v), y2: y(v) }, grid);
+    el("text", { x: left - 8, y: y(v) + 4, "text-anchor": "end", class: "axis-label" }, svg).textContent = `${Math.round(v * 100)}%`;
+  }
+  const slot = (W - left - right) / 12, bw = slot / 4;
+  const legend = document.getElementById("legend-degree");
+  legend.innerHTML = groups.map(([g, l]) => `<span><i style="background:var(--c-${g})"></i>${l}（大调 ${DATA.degree_n[g]} 首）</span>`).join("");
+  names.forEach((n, d) => {
+    groups.forEach(([g, l], k) => {
+      const v = DATA.degrees[g][d];
+      const x = left + slot * d + slot / 2 + (k - 1) * (bw + 2) - bw / 2;
+      el("rect", { x, y: y(v), width: bw, height: Math.max(y(0) - y(v), 0.5), rx: 2, class: `bar f-${g}`, "data-tip": `${l} · ${n} 级 · ${(v * 100).toFixed(1)}%` }, svg);
+    });
+    el("text", { x: left + slot * d + slot / 2, y: H - bottom + 18, "text-anchor": "middle", style: "fill: var(--ink)" }, svg).textContent = n;
+    if (!degreeTableDone) document.querySelector("#table-degree tbody").insertAdjacentHTML("beforeend",
+      `<tr><td>${n} 级</td>${groups.map(([g]) => `<td class="n">${(DATA.degrees[g][d] * 100).toFixed(1)}%</td>`).join("")}</tr>`);
+  });
+  degreeTableDone = true;
+}
+lengths(); degrees();
+attachTip(document.getElementById("chart-length"));
+attachTip(document.getElementById("chart-degree"));
+let resizeTimer = 0, lastWidth = window.innerWidth;
+window.addEventListener("resize", () => {
+  if (window.innerWidth === lastWidth) return;
+  lastWidth = window.innerWidth;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { lengths(); degrees(); }, 150);
+});
+
+/* ---------- practice pieces: audio + piano roll ---------- */
+(function pieces() {
+  const box = document.getElementById("pieces");
+  const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+  const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>';
+  const fmt = (t) => `0:${String(Math.floor(t)).padStart(2, "0")}`;
+  const players = [];
+  PIECES.forEach((p) => {
+    const card = document.createElement("article");
+    card.className = "piece";
+    card.innerHTML = `<div class="piece-head"><h3><span class="tag ${p.tag[0]}">${p.tag[1]}</span>${p.name}</h3><span class="meta">${p.meta}</span></div>
+      <div class="player"><button class="play" type="button" id="play-${p.key}" aria-label="播放 ${p.name}">${playIcon}</button>
+      <div style="min-width:0"><svg class="roll" viewBox="0 0 600 96" preserveAspectRatio="none" aria-hidden="true"></svg><div class="time">0:00 / ${fmt(DATA.audio[p.key].dur)}</div></div></div>
+      <span class="score score-line">${p.score}</span><p class="why">${p.why}</p>`;
+    box.appendChild(card);
+    const svg = card.querySelector(".roll"), time = card.querySelector(".time"), btn = card.querySelector(".play");
+    const notes = DATA.rolls[p.key];
+    const lo = Math.min(...notes.map(n => n[2])) - 1, hi = Math.max(...notes.map(n => n[2])) + 1;
+    const T = DATA.audio[p.key].dur, Wv = 600, Hv = 96, rh = Hv / (hi - lo + 1);
+    const rects = notes.map(([s, d, pitch, layer]) => {
+      const r = el("rect", { x: s / T * Wv, y: (hi - pitch) * rh, width: Math.max(d / T * Wv, 1.5), height: Math.max(rh * 0.9, 1.5), rx: 1, class: `n-${layer}` }, svg);
+      return { r, s, e: s + d };
+    });
+    const head = el("line", { x1: 0, x2: 0, y1: 0, y2: Hv, class: "head", "vector-effect": "non-scaling-stroke" }, svg);
+    const audio = new Audio();
+    audio.preload = "none";
+    audio.src = DATA.audio[p.key].file;
+    let raf = 0;
+    const draw = () => {
+      const t = audio.currentTime;
+      const xpos = Math.min(t / T, 1) * Wv;
+      head.setAttribute("x1", xpos); head.setAttribute("x2", xpos);
+      rects.forEach(o => o.r.classList.toggle("on", t >= o.s && t < o.e));
+      time.textContent = `${fmt(t)} / ${fmt(T)}`;
+      if (!audio.paused) raf = requestAnimationFrame(draw);
+    };
+    const setIcon = () => { btn.innerHTML = audio.paused ? playIcon : pauseIcon; btn.setAttribute("aria-label", `${audio.paused ? "播放" : "暂停"} ${p.name}`); };
+    btn.addEventListener("click", () => {
+      if (audio.paused) {
+        players.forEach(o => { if (o !== audio && !o.paused) o.pause(); });
+        if (audio.ended || audio.currentTime >= T - 0.05) audio.currentTime = 0;
+        audio.play().catch(() => { time.textContent = "无法播放，请再点一次"; });
+      } else audio.pause();
+    });
+    audio.addEventListener("play", () => { setIcon(); cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); });
+    audio.addEventListener("pause", () => { setIcon(); cancelAnimationFrame(raf); draw(); });
+    audio.addEventListener("ended", () => { setIcon(); rects.forEach(o => o.r.classList.remove("on")); });
+    players.push(audio);
+  });
+})();
+</script>
+</body>
+</html>
