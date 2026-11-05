@@ -51,12 +51,15 @@ def length_figure(groups) -> None:
         if jr:
             q1, q2, q3 = np.percentile(jr, [25, 50, 75])
             ax.annotate(f"JR-SH 系列 {len(jr)} 首：中位 {q2:.1f} 秒\n半数在 {q1:.1f}–{q3:.1f} 秒之间", xy=(q2, y - 0.2),
-                        xytext=(5.6, y - 0.5), fontsize=8.5, color=INK2, va="center", ha="right",
+                        xytext=(0.4, y - 0.52), fontsize=8.5, color=INK2, va="center", ha="left",
                         arrowprops={"arrowstyle": "-", "color": INK2, "linewidth": 0.8, "relpos": (1.0, 0.5)})
     ax.set_yticks(range(len(groups)))
     ax.set_yticklabels([f"{n}（{len(r)}）" for n, r in reversed(list(groups.items()))])
     ax.set_xlabel("一遍的有效长度（秒，从第一个音到最后一个音结束）")
-    ax.set_xlim(2, 22)
+    # the axis follows the data, so the longest melodies (about 29 s) are never cut off
+    longest = max(float(r["span_s"]) for rows in groups.values() for r in rows)
+    ax.set_xlim(0, np.ceil(longest) + 1)
+    ax.set_xticks(np.arange(0, np.ceil(longest) + 1, 5))
     ax.set_ylim(-0.7, len(groups) - 0.25)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
